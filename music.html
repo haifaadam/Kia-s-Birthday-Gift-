@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <title>BGM</title>
+</head>
+<body style="margin:0">
+  <audio id="bgm" loop autoplay>
+    <source src="lagu.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const audio = document.getElementById('bgm');
+
+    // Terima perintah play/pause dari halaman utama
+    window.addEventListener('message', (ev) => {
+      if (ev.origin !== window.location.origin) return;
+      const data = ev.data || {};
+      if (data.type === 'bgm-cmd') {
+        if (data.cmd === 'play') audio.play();
+        if (data.cmd === 'pause') audio.pause();
+        // Balikin status ke opener biar ikon sinkron
+        try {
+          ev.source?.postMessage({ type: 'bgm-status', playing: !audio.paused }, ev.origin);
+        } catch (_) {}
+      }
+    });
+
+    // Kasih tahu status awal ke halaman pembuka (kalau ada)
+    try {
+      window.opener?.postMessage({ type: 'bgm-status', playing: !audio.paused }, window.location.origin);
+    } catch (_) {}
+  </script>
+</body>
+</html>

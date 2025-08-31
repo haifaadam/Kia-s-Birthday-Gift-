@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link rel="stylesheet" href="effectbunga.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Beranda</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffcaeb;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin-top: 200px;
+        }
+        h1 {
+            color: #fc6bf4;
+        }
+        .btn {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: white;
+            background-color: #fd93fd;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #ff3bf5;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // Jalankan saat halaman selesai dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+          let darkMode = localStorage.getItem("darkMode");
+          if (darkMode === "enabled") {
+            document.body.classList.add("dark-mode");
+          }
+        });
+
+        function toggleDarkMode() {
+          if (document.body.classList.contains("dark-mode")) {
+            document.body.classList.remove("dark-mode");
+            localStorage.setItem("darkMode", "disabled");
+          } else {
+            document.body.classList.add("dark-mode");
+            localStorage.setItem("darkMode", "enabled");
+          }
+        }
+      </script>
+
+    <!-- Ikon Musik -->
+    <div id="musicToggle">🎵</div>
+
+    <div class="container">
+        <h1>Selamat Datang Kia!</h1>
+        <p>Masukkan PIN 6 digit untuk melanjutkan :  Hint (Tanggal Lahir Kamu!)</p>
+
+        <div id="pinForm">
+            <div id="pinContainer" style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveFocus(this, 0)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveFocus(this, 1)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveFocus(this, 2)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveFocus(this, 3)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveFocus(this, 4)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveFocus(this, 5)">
+            </div>
+            <button onclick="checkPIN()" class="btn">Masuk</button>
+        </div>
+
+        <p id="errorMessage" style="color: red; display: none;">PIN salah! Coba lagi.</p>
+    </div>
+
+    <style>
+        .pin-input {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #fd93fd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .pin-input:focus {
+            border-color: #ff3bf5;
+            box-shadow: 0 0 5px rgba(253, 147, 253, 0.5);
+        }
+
+        /* Hide number input arrows */
+        .pin-input::-webkit-outer-spin-button,
+        .pin-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .pin-input[type=number] {
+            appearance: textfield;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            .pin-input {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            #pinContainer {
+                gap: 8px !important;
+            }
+        }
+    </style>
+
+    <script>
+        function moveFocus(currentInput, index) {
+            // Hanya izinkan 1 digit
+            if (currentInput.value.length > 1) {
+                currentInput.value = currentInput.value.slice(0, 1);
+            }
+
+            // Pindah ke input berikutnya jika sudah diisi
+            if (currentInput.value.length === 1 && index < 5) {
+                const nextInput = document.querySelectorAll('.pin-input')[index + 1];
+                nextInput.focus();
+            }
+
+            // Auto submit saat PIN lengkap
+            if (index === 5 && currentInput.value.length === 1) {
+                checkPIN();
+            }
+        }
+
+        function checkPIN() {
+            const pinInputs = document.querySelectorAll('.pin-input');
+            let enteredPIN = '';
+
+            pinInputs.forEach(input => {
+                enteredPIN += input.value;
+            });
+
+            const correctPIN = "010906"; // PIN 6 digit: 010906
+
+            if (enteredPIN === correctPIN) {
+                // PIN benar, redirect ke webkia.html
+                window.location.href = 'webkia.html';
+            } else {
+                // PIN salah, tampilkan pesan error dan reset
+                document.getElementById('errorMessage').style.display = 'block';
+                pinInputs.forEach(input => {
+                    input.value = '';
+                });
+                pinInputs[0].focus();
+
+                // Sembunyikan error setelah 3 detik
+                setTimeout(() => {
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Event listener untuk navigasi dengan keyboard
+        document.addEventListener('keydown', function(event) {
+            const pinInputs = document.querySelectorAll('.pin-input');
+            const activeElement = document.activeElement;
+            const activeIndex = Array.from(pinInputs).indexOf(activeElement);
+
+            if (activeIndex !== -1) {
+                if (event.key === 'Backspace' && activeElement.value === '' && activeIndex > 0) {
+                    pinInputs[activeIndex - 1].focus();
+                } else if (event.key === 'Enter') {
+                    checkPIN();
+                }
+            }
+        });
+
+        // Focus ke input pertama saat halaman dimuat
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.pin-input')[0].focus();
+        });
+    </script>
+
+    <!-- Include Music Manager -->
+    <script src="music-manager.js"></script>
+
+<script src="effectbunga.js"></script>
+
+</body>
+</html>

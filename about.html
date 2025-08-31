@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <link rel="stylesheet" href="effectbunga.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page Transition Styles */
+        body {
+            opacity: 0;
+            transition: 0.5s ease-in-out;
+        }
+
+        body.loaded {
+            opacity: 1;
+        }
+
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff4da6, #ff80bf);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .page-transition.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Gallery Slider Styles */
+        .gallery-slider {
+            margin: 20px auto;
+            max-width: 400px;
+            position: center;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .slides {
+            display: flex;
+            transition: 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: 1.5s ease-in-out;
+            display: block;
+        }
+
+        .slide.active {
+            opacity: 1;
+            position: relative;
+        }
+
+        .slide.fade-out {
+            opacity: 0;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%; /* Fixed height for images */
+            object-fit: cover; /* Ensure images cover the area */
+            display: block;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .slider-btn.prev {
+            left: 10px;
+        }
+
+        .slider-btn.next {
+            right: 10px;
+        }
+
+        .dots-container {
+            text-align: center;
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .dot {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: #717171;
+        }
+
+        .card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        /* Dark Mode Adjustments for Slider */
+        body.dark-mode .card {
+            background-color: #333;
+            color: #f1f1f1;
+        }
+        body.dark-mode .dot {
+            background-color: #555;
+        }
+        body.dark-mode .dot.active {
+            background-color: #ccc;
+        }
+        body.dark-mode .slider-btn {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<!--Navbar -->
+<script>
+    // Jalankan saat halaman selesai dimuat
+    window.onload = function() {
+      let darkMode = localStorage.getItem("darkMode");
+      if (darkMode === "enabled") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("darkToggle").innerText = "☀️ Light Mode";
+      }
+    }
+
+    function toggleDarkMode() {
+      let btn = document.getElementById("darkToggle");
+      if (document.body.classList.contains("dark-mode")) {
+        document.body.classList.remove("dark-mode");
+        localStorage.setItem("darkMode", "disabled");
+        btn.innerText = "🌙 Dark Mode";
+      } else {
+        document.body.classList.add("dark-mode");
+        localStorage.setItem("darkMode", "enabled");
+        btn.innerText = "☀️ Light Mode";
+      }
+    }
+  </script>
+
+
+    <!-- Navbar -->
+   <!-- Tombol Hamburger -->
+<div class="hamburger" onclick="toggleMenu()">☰</div>
+
+<!-- Page Transition Overlay -->
+<div id="pageTransition" class="page-transition">
+    <div>Loading...</div>
+</div>
+
+<!-- Sidebar Menu -->
+<div id="sidebar" class="sidebar">
+  <a href="#" onclick="navigateWithTransition('home.html')">Beranda</a>
+  <a href="#" onclick="navigateWithTransition('about.html')">Tentang Penulis</a>
+  <a href="#" onclick="navigateWithTransition('webkia.html')">Ucapan Ulang Tahun</a>
+  <a href="#" onclick="toggleDarkMode()" id="darkToggle">🌙 Dark Mode</a>
+</div>
+
+<style>
+  /* Tombol Hamburger */
+  .hamburger {
+    font-size: 28px;
+    cursor: pointer;
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    z-index: 1001;
+    background: #ff4da6;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #ff4da6;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+    z-index: 1000;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    let sidebar = document.getElementById("sidebar");
+    if (sidebar.style.width === "200px") {
+      sidebar.style.width = "0";
+    } else {
+      sidebar.style.width = "200px";
+    }
+  }
+</script>
+
+    <div class="container">
+        <h2>Tentang Penulis</h2>
+        <p>Halo, aku Adam! Orang yang buat ucapan ini untuk Kia! </p>
+
+        <!-- Gallery Slider Adam -->
+        <div class="gallery-slider">
+            <div class="slider-container">
+                <div class="slides" id="slides">
+                    <div class="slide active">
+                        <img src="./fotoadam1.jpg" alt="Foto Adam 1">
+                    </div>
+                    <div class="slide">
+                        <img src="./fotoadam2.jpg" alt="Foto Adam 2">
+                    </div>
+                    <div class="slide">
+                        <img src="./fotoadam3.jpg" alt="Foto Adam 3">
+                    </div>
+                </div>
+
+                <!-- Navigation buttons -->
+                <button class="slider-btn prev" onclick="changeSlide(-1)">❮</button>
+                <button class="slider-btn next" onclick="changeSlide(1)">❯</button>
+
+                <!-- Dots indicator -->
+                <div class="dots-container">
+                    <span class="dot active" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                    <span class="dot" onclick="currentSlide(3)"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <p>Nah, jadi foto diatas itu adalah Adam! Gimana? Ganteng chubby gitu ya HAHAHHA! Bahkan kia aja namain aku di kontaknya itu adam chubby, lucu ya! Menurut Kia, aku itu orangnya ekstrovert mentok! Bisa ngobrol sama siapa aja. Bahkan, Kia bilang kalo aku bisa akrab sama orang yang baru kenal sekalipun! Cukup unik ya si Adam ini.</p> 
+            <p>Menurut Kia, aku punya jiwa sosial yang tinggi. Aku jadi mikir, emang iya ya? - Singkatnya, aku orang yang bisa berbaur tanpa pandang umur mulai dari anak-anak sampai nenek-nenek di mata Kia. Terakhir, kalo kata Kia, aku orangnya asik.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; From Adam to Zhaskia❤️</p>
+    </footer>
+
+    <script>
+        // Page initialization and transitions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loaded class for smooth entrance
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 100);
+        });
+
+        function navigateWithTransition(url) {
+            const transition = document.getElementById('pageTransition');
+            const sidebar = document.getElementById('sidebar');
+
+            // Close sidebar
+            sidebar.style.width = '0';
+
+            // Show transition
+            transition.classList.add('active');
+
+            // Navigate after transition
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        }
+
+        // Gallery Slider untuk foto Adam
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function showSlide(index) {
+            // Fade out current active slide
+            const currentSlide = document.querySelector('.slide.active');
+            if (currentSlide) {
+                currentSlide.classList.add('fade-out');
+                setTimeout(() => {
+                    currentSlide.classList.remove('active', 'fade-out');
+                }, 500);
+            }
+
+            // Remove active from dots
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            // Fade in new slide after delay
+            setTimeout(() => {
+                if (slides[index] && dots[index]) {
+                    slides[index].classList.add('active');
+                    dots[index].classList.add('active');
+                }
+            }, 500);
+        }
+
+        function changeSlide(direction) {
+            slideIndex += direction;
+
+            if (slideIndex >= slides.length) {
+                slideIndex = 0;
+            } else if (slideIndex < 0) {
+                slideIndex = slides.length - 1;
+            }
+
+            showSlide(slideIndex);
+        }
+
+        function currentSlide(index) {
+            slideIndex = index - 1;
+            showSlide(slideIndex);
+        }
+
+        // Auto slide every 5 seconds
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+    </script>
+
+<script src="effectbunga.js"></script>
+
+</body>
+</html>
